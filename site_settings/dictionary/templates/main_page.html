@@ -9,20 +9,10 @@
     <title>Main</title>
 </head>
 <body>
-    <h1>Welcome to HSE DSBA 242-1 words ditionary!</h1>
-    <table>
-        <tr>
-            <th>Word</th>
-            <th>Translation</th>
-            <th>Topic</th>
-        </tr>
-        {% for word in words %}
-        <tr>
-            <td>{{ word.word }}</td>
-            <td>{{ word.translation }}</td>
-            <td>{{ word.topic }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h1>Main page of HSE DSBA 242-1 English classes</h1>
+    <ul>
+        <li><a href="{% url 'words_page' %}">Dictionary</a></li>
+        <li><a href="{% url 'game_page' %}">Learning Game</a></li>
+    </ul>
 </body>
 </html>
