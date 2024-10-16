@@ -1,0 +1,19 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Topics</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <h1>Choose Topics for Learning</h1>
+    <form method="POST" action="{% url 'start_game' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Start Game</button>
+    </form>
+</body>
+</html>

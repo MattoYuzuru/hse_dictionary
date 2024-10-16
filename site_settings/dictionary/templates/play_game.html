@@ -1,0 +1,24 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Play</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<h1>Guess the word!</h1>
+<p>Translation: {{ word.translation }}</p>
+<form id="answer-form" method="POST" action="{% url 'play_game' %}">
+    {% csrf_token %}
+    <input type="hidden" name="correct_word" value="{{ word.word }}">
+    <input type="text" name="answer" placeholder="Type your answer">
+    <button type="submit">Submit</button>
+</form>
+<div id="feedback"></div>
+<p><a href="{% url 'game_over' %}">End game</a></p>
+
+<script src="{% static 'script.js' %}"></script>
+</body>
