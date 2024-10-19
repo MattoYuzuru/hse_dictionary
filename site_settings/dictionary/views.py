@@ -1,5 +1,6 @@
 import random
 
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from .forms import TopicForm
@@ -23,7 +24,7 @@ def start_game(request):
             words = Word.objects.filter(topic__in=selected_topics)
             request.session['words'] = list(words.values('id', 'word', 'translation'))
             request.session['score'] = 0
-            request.session['total'] = len(words)
+            request.session['total'] = 0
             return redirect('play_game')
     else:
         form = TopicForm()
@@ -32,7 +33,10 @@ def start_game(request):
 
 
 def play_game(request):
+    # Check if there are any words in the session
     if 'words' not in request.session or not request.session['words']:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'message': 'Game over', 'game_over': True})
         return redirect('game_over')
 
     word_list = request.session['words']
@@ -41,13 +45,29 @@ def play_game(request):
     if request.method == 'POST':
         answer = request.POST.get('answer')
         correct_word = request.POST.get('correct_word')
+
         if str(answer).strip().lower() == correct_word.lower():
             request.session['score'] += 1
             message = "Correct"
         else:
-            message = "Incorrect"
+            message = f"Incorrect, the right word is {correct_word}"
+
+        request.session['total'] += 1
         request.session['words'].remove(current_word)
-        print(message, correct_word, answer)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            if request.session['words']:
+                new_word = random.choice(request.session['words'])
+                return JsonResponse({
+                    'message': message,
+                    'correct_translation': correct_word,
+                    'new_word': {
+                        'translation': new_word['translation'],
+                        'word': new_word['word']
+                    }
+                })
+            else:
+                return JsonResponse({'message': 'Game over', 'game_over': True})
 
     return render(request, 'play_game.html', {'word': current_word})
 
