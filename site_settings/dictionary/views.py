@@ -33,14 +33,10 @@ def start_game(request):
 
 
 def play_game(request):
-    # Check if there are any words in the session
     if 'words' not in request.session or not request.session['words']:
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'message': 'Game over', 'game_over': True})
         return redirect('game_over')
 
     word_list = request.session['words']
-    current_word = random.choice(word_list)
 
     if request.method == 'POST':
         answer = request.POST.get('answer')
@@ -50,26 +46,31 @@ def play_game(request):
             request.session['score'] += 1
             message = "Correct"
         else:
-            message = f"Incorrect, the right word is {correct_word}"
+            message = "Incorrect"
 
         request.session['total'] += 1
-        request.session['words'].remove(current_word)
 
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            if request.session['words']:
-                new_word = random.choice(request.session['words'])
-                return JsonResponse({
-                    'message': message,
-                    'correct_translation': correct_word,
-                    'new_word': {
-                        'translation': new_word['translation'],
-                        'word': new_word['word']
-                    }
-                })
-            else:
-                return JsonResponse({'message': 'Game over', 'game_over': True})
+        word_list = [word for word in word_list if word['word'] != correct_word]
+        request.session['words'] = word_list
 
-    return render(request, 'play_game.html', {'word': current_word})
+        if not word_list:
+            return JsonResponse({'game_over': True})
+
+        new_word = random.choice(word_list)
+
+        return JsonResponse({
+            'message': message,
+            'correct_translation': correct_word,
+            'new_word': new_word,
+            'game_over': False
+        })
+
+    if request.method == 'GET':
+        if not word_list:
+            return redirect('game_over')
+
+        current_word = random.choice(word_list)
+        return render(request, 'play_game.html', {'word': current_word})
 
 
 def game_over(request):

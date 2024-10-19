@@ -8,11 +8,15 @@ $(document).ready(function () {
             data: $(this).serialize(),
             success: function (data) {
                 if (data.game_over) {
-                    window.location.href = "/gameover/";
+                    window.location.href = "/dictionary/gameover/";
                 } else {
                     $('#feedback').text(data.message);
 
-                    $('#correct-translation').text("Correct translation: " + data.correct_translation);
+                    if (data.message === "Incorrect") {
+                        $('#correct-translation').text("Correct translation: " + data.correct_translation);
+                    } else {
+                        $('#correct-translation').text('');
+                    }
 
                     $('#word-translation').text("Translation: " + data.new_word.translation);
 
@@ -22,7 +26,6 @@ $(document).ready(function () {
 
                     setTimeout(function () {
                         $('#feedback').text('');
-                        $('#correct-translation').text('');
                     }, 2000);  // 2 seconds
                 }
             },
