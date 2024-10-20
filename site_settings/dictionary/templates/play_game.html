@@ -16,7 +16,7 @@
 <form id="answer-form" action="{% url 'play_game' %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="correct_word" value="{{ word.word }}">
-    <input type="text" name="answer" placeholder="Type your answer">
+    <input type="text" name="answer" placeholder="Type your answer" autocomplete="off">
     <button type="submit">Submit</button>
 </form>
 

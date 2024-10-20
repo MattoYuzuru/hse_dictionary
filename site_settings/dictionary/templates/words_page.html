@@ -24,6 +24,24 @@
     </tr>
     {% endfor %}
 </table>
+
+<div class="pagination-container">
+    <ul>
+        <li {% if not words.has_previous %} {% endif %}>
+            <a href="{% if words.has_previous %} {% url 'paginator' words.previous_page_number %} {% else %} # {% endif %}">Previous</a>
+        </li>
+        {% for page in words.paginator.page_range %}
+        <li>
+            <a href="{% url 'paginator' page %}">{{ page }}</a>
+        </li>
+        {% endfor %}
+
+        <li {% if not words.has_next %} {% endif %}>
+            <a href="{% if words.has_next %} {% url 'paginator' words.next_page_number %} {% else %} # {% endif %}">Next</a>
+        </li>
+    </ul>
+</div>
+
 <p><a href="{% url 'main_page' %}">Go back</a></p>
 </body>
 </html>

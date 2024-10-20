@@ -1,7 +1,9 @@
 import random
 
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.cache import cache_page
 
 from .forms import TopicForm
 from .models import Word
@@ -11,9 +13,15 @@ def main_page(request):
     return render(request, 'main_page.html')
 
 
-def words_table_page(request):
+@cache_page(60 * 15)
+def words_table_page(request, page_num=1):
     words = Word.objects.all()
-    return render(request, 'words_page.html', {"words": words})
+
+    per_page = 20
+    paginator = Paginator(object_list=words, per_page=per_page)
+    paginated_words = paginator.page(page_num)
+
+    return render(request, 'words_page.html', {"words": paginated_words})
 
 
 def start_game(request):
