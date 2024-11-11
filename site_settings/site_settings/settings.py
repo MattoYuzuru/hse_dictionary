@@ -1,4 +1,5 @@
 import os
+from logging import getLogger
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -11,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY1')
 
 DEBUG = os.getenv('DEBUG_MODE1')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dictionary',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -31,7 +33,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+# CORS_ALLOWED_ORIGINS = ['*']CORS_ALLOWED_ORIGINS
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 ROOT_URLCONF = 'site_settings.urls'
 
@@ -52,30 +59,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'site_settings.wsgi.application'
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "USER": str(os.getenv('USER1')),
-        "NAME": str(os.getenv('NAME1')),
-        "PASSWORD": str(os.getenv('PASSWORD1')),
-        "HOST": os.getenv('HOST1'),
+        "USER": str(os.getenv('USER')),
+        "NAME": str(os.getenv('NAME')),
+        "PASSWORD": str(os.getenv('PASSWORD')),
+        "HOST": os.getenv('HOST'),
         "PORT": "3306",
     },
 }
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://redis:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+print(DATABASES)
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://redis:6379/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
+#
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# SESSION_CACHE_ALIAS = 'default'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -104,5 +110,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+logger = getLogger(__name__)
+logger.error(STATIC_ROOT)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
